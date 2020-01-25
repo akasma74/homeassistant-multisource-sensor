@@ -14,7 +14,8 @@ a way Home Assistant handles them, you're in troubles.
 So you've been warned.
 
 ## Description  
-Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io/integrations/min_max/) sensor:
+Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io/integrations/min_max/) sensor.
+It inherits its sources' `icon` and `unit_of_measurement` (which defaults to `ERR` if they mismatch across sources).
 
 <a id="sensors"></a>
 **sensors**  
