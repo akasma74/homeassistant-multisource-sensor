@@ -1,15 +1,16 @@
 # homeassistant: multisource sensor  
 
 ## Intro  
-This sensor is based on [`Min/Max`](https://www.home-assistant.io/integrations/min_max/) sensor.  
-The main reason to create it was that Min/Max sensor's value is always numerical - it stores the  
-last valid (i.e not `unknown`/`unavailable` state of its entities.  
+This sensor is based on [`Min/Max`](https://www.home-assistant.io/integrations/min_max/) sensor,  
+which is very useful to compute one value based on a number of related values.  
+The main problem I saw in Min/Max was that its state is always numerical as it stores the  
+last numerical (i.e not `unknown`/`unavailable`) state of its entities according to the docs.  
 Therefore it won't become `unknown` even if all of its entities become `unknown` and one needs  
-to take their own measures to react to such situation.  
+to take their own measures to react to such situation as per this [discussion](https://github.com/home-assistant/home-assistant/pull/29863#issuecomment-566447859).  
 This can be done using automations and additional entities, but it won't be as flexible as  
 a custom component.  
-On the other hand, it's always a risk when using custom component as if something changes in  
-a way Home Assistant handles them, you're screwed.  
+On the other hand, there is always a risk when using custom component as if something changes in  
+a way Home Assistant handles them, you're in troubles.  
 So you've been warned.
 
 ## Description  
@@ -36,16 +37,16 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 <a id="sensors-name-sources"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **sources**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(list) (Required)_  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; List of sensors to combine (sources).  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; List of sensors to combine.  
 &nbsp;  
 <a id="sensors-name-selectable_sources"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **selectable_sources**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(boolean) (Optional)_  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If `True`, each source will be considered only if a corresponding selector  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If `true`, each source will be considered only if a corresponding selector  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; is `on` (see [`selectors`](#sensors-name-selectors) for details).  
 &nbsp;  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _Default value:_  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; False  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; false  
 &nbsp;  
 <a id="sensors-name-selectors"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **selectors**  
@@ -59,7 +60,7 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **round_digits**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(number) (Optional)_  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Number of digits to round the value of sensor.  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If omitted (or -1), state of the sensor will be a copy of the source's state (i.e no change).  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If omitted, state of the sensor will be a copy of the source's state (i.e no change).  
 &nbsp;  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _Default value:_  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; -1  
@@ -67,13 +68,17 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 <a id="sensors-name-friendly_name"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **friendly_name**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(string) (Optional)_  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Human friendly name of the sensor.  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Human friendly name of sensor.  
 &nbsp;  
 
+## Installation  
+Copy `custom_components/multisource` folder into your `<HA config>/custom_components/` folder.
+You will need to restart Home Assistant.
+
 ## Use  
-1. Simple case - one physical sensor and two receivers (RFLink and OMG Pilight).
-Each of them has its own sensor in homeassistant. Then we combine them using last arrived reading.   
-```
+1. Simple case - one physical sensor and two receivers (RFLink and OMG Pilight).  
+Each of them has its own sensor in Home Assistant. Then we combine them to use last arrived reading:   
+```yaml
 # these sensors reflect appropriate protocol's values
 # and behave like 'last' filter but change to 'unknown' if all of the entity_id are unknown
 - platform: multisource
@@ -89,12 +94,11 @@ Each of them has its own sensor in homeassistant. Then we combine them using las
       sources:
         - sensor.pilight_ground_floor_lounge_temperature
         - sensor.rflink_ground_floor_lounge_temperature
-
 ```
 
-2. Using these sensors (sources), we can now create a combined sensor whose value represent the minimal value of its sources  
-We also use `round_digits` to set resulting precision.
-```
+2. Using these sensors as sources, we can now create a combined sensor whose state represent  
+the minimal value of its sources. We also use `round_digits` to set resulting precision:  
+```yaml
 - platform: multisource
   sensors:
     composite_temperature:
@@ -103,8 +107,9 @@ We also use `round_digits` to set resulting precision.
       round_digits: 1
 ```
 
-3. Any `multisource` sensor can be configured to enable/disable its sources (which might be useful to exclude some of then either manually or by an automation):  
-```
+3. Any `multisource` sensor can be configured to enable/disable its sources (which might be  
+useful to exclude some of them either manually or by an automation)  
+```yaml
 - platform: multisource
   sensors:
     composite_temperature:
@@ -115,10 +120,9 @@ We also use `round_digits` to set resulting precision.
       sources:
         - sensor.ground_floor_reception_reliable_temperature
         - sensor.ground_floor_lounge_reliable_temperature
-
 ```
 or
-```
+```yaml
 - platform: multisource
   sensors:
     ground_floor_reception_reliable_temperature:
