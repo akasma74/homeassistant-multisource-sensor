@@ -30,8 +30,9 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(string) (Optional)_  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; The type of sensor (same as for [`Min/Max sensor`](https://www.home-assistant.io/integrations/min_max/#type)). Supported values are `min`, `last`.  
 &nbsp;  
-&nbsp;&nbsp;&nbsp; _Default value:_  
-&nbsp;&nbsp;&nbsp; `last`  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _Default value:_  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; `last`  
+&nbsp;  
 <a id="sensors-name-sources"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **sources**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(list) (Required)_  
@@ -43,8 +44,9 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If `True`, each source will be considered only if a corresponding selector  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; is `on` (see [`selectors`](#sensors-name-selectors) for details).  
 &nbsp;  
-&nbsp;&nbsp;&nbsp; _Default value:_  
-&nbsp;&nbsp;&nbsp; False  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _Default value:_  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; False  
+&nbsp;  
 <a id="sensors-name-selectors"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **selectors**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(list) (Optional)_  
@@ -59,8 +61,9 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Number of digits to round the value of sensor.  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If omitted (or -1), state of the sensor will be a copy of the source's state (i.e no change).  
 &nbsp;  
-&nbsp;&nbsp;&nbsp; _Default value:_  
-&nbsp;&nbsp;&nbsp; -1  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _Default value:_  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; -1  
+&nbsp;  
 <a id="sensors-name-friendly_name"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **friendly_name**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(string) (Optional)_  
@@ -70,7 +73,7 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 ## Use  
 1. Simple case - one physical sensor and two receivers (RFLink and OMG Pilight).
 Each of them has its own sensor in homeassistant. Then we combine them using last arrived reading.   
-`
+```
 # these sensors reflect appropriate protocol's values
 # and behave like 'last' filter but change to 'unknown' if all of the entity_id are unknown
 - platform: multisource
@@ -87,21 +90,21 @@ Each of them has its own sensor in homeassistant. Then we combine them using las
         - sensor.pilight_ground_floor_lounge_temperature
         - sensor.rflink_ground_floor_lounge_temperature
 
-`
+```
 
 2. Using these sensors (sources), we can now create a combined sensor whose value represent the minimal value of its sources  
 We also use `round_digits` to set resulting precision.
-`
+```
 - platform: multisource
   sensors:
     composite_temperature:
       friendly_name: composite temperature
       type: min
       round_digits: 1
-`
+```
 
 3. Any `multisource` sensor can be configured to enable/disable its sources (which might be useful to exclude some of then either manually or by an automation):  
-`
+```
 - platform: multisource
   sensors:
     composite_temperature:
@@ -113,9 +116,9 @@ We also use `round_digits` to set resulting precision.
         - sensor.ground_floor_reception_reliable_temperature
         - sensor.ground_floor_lounge_reliable_temperature
 
-`
+```
 or
-`
+```
 - platform: multisource
   sensors:
     ground_floor_reception_reliable_temperature:
@@ -127,4 +130,4 @@ or
       selectors:
         - input_boolean.pilight_ground_floor_reception
         - input_boolean.rflink_ground_floor_reception
-`
+```
