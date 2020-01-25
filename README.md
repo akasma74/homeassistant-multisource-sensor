@@ -5,7 +5,7 @@ This sensor is based on [`Min/Max`](https://www.home-assistant.io/integrations/m
 which is very useful to compute one value based on a number of related values.  
 The main problem with the Min/Max sensor was that its state is always numerical as it keeps the  
 last numerical (i.e not `unknown`/`unavailable`) state of its entities according to the docs.  
-Therefore it won't become `unknown` even if all of its entities become `unknown` and one needs  
+Therefore its state won't be `unknown` even if all of its entities' states are `unknown` and one needs  
 to take their own measures to react to such situation as per this [discussion](https://github.com/home-assistant/home-assistant/pull/29863#issuecomment-566447859).  
 This can be done using automations and additional entities, but it won't be as flexible as  
 a custom component.  
@@ -42,8 +42,7 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 <a id="sensors-name-selectable_sources"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **selectable_sources**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(boolean) (Optional)_  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If `true`, each source will be considered only if a corresponding selector  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; is `on` (see [`selectors`](#sensors-name-selectors) for details).  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If `true`, each source will be considered only if a corresponding [`selector`](#sensors-name-selectors) is `on`.  
 &nbsp;  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _Default value:_  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; false  
@@ -51,10 +50,10 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 <a id="sensors-name-selectors"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **selectors**  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; _(list) (Optional)_  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; List of selectors (`input_booleans`).  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If present, number of items should be equal to `sources`.  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; List of `input_boolean`s.  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If present, number of items should be equal to `sources`' one.  
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Otherwise you should have configured `input_booleans` so  
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for each `source_x` there is `input_boolean.source_x_selected`.  
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for each `source_x` there is an `input_boolean.source_x_selected`.  
 &nbsp;  
 <a id="sensors-name-round_digits"></a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; **round_digits**  
@@ -73,11 +72,11 @@ Definition of the sensor is similar to [`Min/Max`](https://www.home-assistant.io
 
 ## Installation  
 Copy `custom_components/multisource` folder into your `<HA config>/custom_components/` folder.
-You will need to restart Home Assistant.
+You may need to restart Home Assistant.
 
 ## Use  
-1. Simple case - one physical sensor and two receivers (RFLink and OMG Pilight).  
-Each of them has its own sensor in Home Assistant. Then we combine them to use last arrived reading:   
+1. Simple case - one physical sensor and two receivers ([RFLink](http://www.rflink.nl/blog2/) and [OMG Pilight](https://github.com/1technophile/OpenMQTTGateway)).  
+Each of them has its own sensor in Home Assistant. Wwe combine them to get the last arrived reading:   
 ```yaml
 # these sensors reflect appropriate protocol's values
 # and behave like 'last' filter but change to 'unknown' if all of the entity_id are unknown
@@ -96,7 +95,7 @@ Each of them has its own sensor in Home Assistant. Then we combine them to use l
         - sensor.rflink_ground_floor_lounge_temperature
 ```
 
-2. Using these sensors as sources, we can now create a combined sensor whose state represent  
+2. Using these sensors as sources, we can now create a combined sensor whose state represents  
 the minimal value of its sources. We also use `round_digits` to set resulting precision:  
 ```yaml
 - platform: multisource
