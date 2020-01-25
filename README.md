@@ -3,7 +3,7 @@
 ## Intro  
 This sensor is based on [`Min/Max`](https://www.home-assistant.io/integrations/min_max/) sensor,  
 which is very useful to compute one value based on a number of related values.  
-The main problem I saw in Min/Max was that its state is always numerical as it stores the  
+The main problem with the Min/Max sensor was that its state is always numerical as it keeps the  
 last numerical (i.e not `unknown`/`unavailable`) state of its entities according to the docs.  
 Therefore it won't become `unknown` even if all of its entities become `unknown` and one needs  
 to take their own measures to react to such situation as per this [discussion](https://github.com/home-assistant/home-assistant/pull/29863#issuecomment-566447859).  
